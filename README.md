@@ -1,2 +1,6 @@
-# ml_math_expr_eval
+# ML Math Expression Evaluator
+
 Deep machine learning-based evaluator of mathematical expressions.
+
+## References
+
