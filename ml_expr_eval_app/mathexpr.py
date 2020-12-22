@@ -33,19 +33,21 @@ class Constant(Expression):
 
 
 class MathOperation(Expression):
-    def __init__(self, x, y, operation, symbol, *, requires_brackets=True):
+    def __init__(
+            self, x, y, operation, symbol, *, requires_brackets=True,
+            avoid_spaces=False):
         self.x = self._as_constant(x)
         self.y = self._as_constant(y)
         self.operation = operation
         self.symbol = symbol
         self.requires_brackets = requires_brackets
+        self.avoid_spaces = avoid_spaces
     
     def eval(self, context=None):
         left_val, right_val = self.x.eval(context), self.y.eval(context)
         return self.operation(left_val, right_val)
     
     def as_str(self, context=None):
-        sep = '' if context is None else context.n_spaces * ' '
         left_str, right_str = self.x.as_str(context), self.y.as_str(context)
         
         if self.requires_brackets:
@@ -53,6 +55,10 @@ class MathOperation(Expression):
                 left_str = f'({left_str})'
             if not isinstance(self.y, Constant):
                 right_str = f'({right_str})'
+        
+        sep = ''
+        if not self.avoid_spaces and context is not None:
+            sep = context.n_spaces * ' '
         
         return f'{left_str}{sep}{self.symbol}{sep}{right_str}'
     
@@ -83,7 +89,7 @@ class DivOperation(MathOperation):
 
 class PowOperation(MathOperation):
     def __init__(self, x, y):
-        super().__init__(x, y, operator.pow, '^')
+        super().__init__(x, y, operator.pow, '^', avoid_spaces=True)
 
 
 if __name__ == '__main__':
